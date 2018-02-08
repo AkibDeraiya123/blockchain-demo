@@ -1,0 +1,13 @@
+html
+ head
+  title="Create Wallet Address"
+ block content
+  -if(err)
+   h1=err
+  -else
+   -if(data)
+    h3="Wallet Name:- "+name
+    h3="Wallet Address:- "+data.address
+    h3="Wallet Public Key:- "+data.public
+    h3="Wallet Private Key:- "+data.private
+    h3="Wallet wif:- "+data.wif
