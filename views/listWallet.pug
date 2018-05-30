@@ -1,0 +1,26 @@
+html
+ head
+  meta(charset='utf-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1, user-scalable=no')
+  title= "title"
+ block content
+  h1= "Exist11ing Wallets"
+  a(href="/create") Create New Wallet
+  table(style={
+   'border': '1px solid black'
+  })
+   thead
+    th="No"
+    th="Name"
+    th="view"
+    th="remove"
+
+   tbody
+    each val, index in data
+     tr
+      td=index
+      td=val
+      td
+       a(href="/view/"+val) View more
+      td
+       a(href="/removeWallet/"+val) Remove Wallet

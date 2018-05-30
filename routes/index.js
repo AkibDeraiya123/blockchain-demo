@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 bcypher = require('blockcypher');
-const bcapi = new bcypher('btc','main','c5875043667140f08e5478747927a78e');
+const bcapi = new bcypher('btc','main','YOURTOKEN');
 
 router.get('/', (req, res, next) => {
 	res.render('index')	
@@ -12,7 +12,6 @@ router.get('/create', (req, res, next) => {
 })
 
 router.post('/create', (req, res, next) => {
-	console.log("req.body.name", req.body.name);
 	bcapi.genAddr({}, function(err, data) {
 		if (err) {
 			res.render('showDetail', {
@@ -21,15 +20,10 @@ router.post('/create', (req, res, next) => {
 		} else {
 			console.log("data.address", data.address);
 
-			bcapi.createWallet(
-				{
-					"name": req.body.name, 
-					"addresses": data.address
-				}, function(error, walletRes){
-				console.log("walletRes");
-				if (error) {
+			bcapi.createWallet( { "name": req.body.name, "addresses": [data.address] }, function(error, walletRes) {
+				if (walletRes.error) {
 					res.render('showDetail', {
-						err: "Something Went Wrong Please try again"
+						err: walletRes.error
 					})
 				} else {
 					res.render('showDetail', {
@@ -43,7 +37,38 @@ router.post('/create', (req, res, next) => {
 })
 
 router.get('/listWallet', (req, res, next) => {
-	res.render('listWallet')	
+	bcapi.listWallets((err, data) => {
+		console.log("data", data);
+		if (err === null && data && data.wallet_names.length > 0) {
+			res.render('listWallet', {
+				data: data.wallet_names
+			});
+		} else {
+			console.log("Something wrong")
+		}
+	})
+})
+
+router.get('/view/:walletName', (req, res, next) => {
+	bcapi.getWallet(req.params.walletName, (error, data)=> {
+		console.log("error", error);
+		console.log("data", data);
+
+		res.render('viewWallet', {
+			data: {
+				name: data.name,
+				addresses: data.addresses
+			}
+		});
+	})
+})
+
+router.get('/removeWallet/:add', (req, res, next) => {
+	bcapi.delWallet(req.params.add, (error, data)=> {
+		console.log("error", error);
+		console.log("data", data);
+
+	})
 })
 
 module.exports = router;
